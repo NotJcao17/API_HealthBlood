@@ -3,3 +3,4 @@ dist
 nbproject
 test
 .git
+src/java/db.properties

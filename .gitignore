@@ -3,5 +3,6 @@ build/
 dist/
 nbproject/private/
 
-# Variables de entorno locales (nunca subir contrasenas)
+# Credenciales locales de la base de datos (nunca subir contrasenas)
 .env
+src/java/db.properties

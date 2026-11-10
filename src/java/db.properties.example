@@ -1,0 +1,7 @@
+# Copia este archivo como "db.properties" (en esta misma carpeta) y llena tus datos.
+# db.properties NO se sube a GitHub; este .example si, como plantilla.
+DB_HOST=gateway01.us-east-1.prod.aws.tidbcloud.com
+DB_PORT=4000
+DB_NAME=healthBlood
+DB_USER=PREFIJO.root
+DB_PASSWORD=tu_contrasena

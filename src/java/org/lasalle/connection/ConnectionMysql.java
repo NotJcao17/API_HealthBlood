@@ -3,31 +3,50 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package org.lasalle.connection;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.Properties;
 
 /**
  *
  * @author j_c_o
  */
 public class ConnectionMysql {
-    
+
     Connection conn;
-    
-    // Lee una variable de entorno; si no existe, usa el valor por defecto
-    private static String env(String nombre, String porDefecto){
+
+    // Datos del archivo db.properties (src/java/db.properties). Git lo ignora,
+    // asi que la contrasena nunca se sube a GitHub.
+    private static final Properties DB_PROPS = new Properties();
+    static {
+        try (InputStream in = ConnectionMysql.class.getClassLoader().getResourceAsStream("db.properties")) {
+            if (in != null) {
+                DB_PROPS.load(in);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Busca un dato en este orden:
+    // 1. Variable de entorno (asi funciona en Northflank)
+    // 2. Archivo db.properties (asi funciona en NetBeans)
+    // 3. Valor por defecto (MySQL local)
+    private static String config(String nombre, String porDefecto){
         String valor = System.getenv(nombre);
-        return (valor == null || valor.isBlank()) ? porDefecto : valor;
+        if (valor == null || valor.isBlank()) {
+            valor = DB_PROPS.getProperty(nombre);
+        }
+        return (valor == null || valor.isBlank()) ? porDefecto : valor.trim();
     }
 
     public Connection open(){
-        // En linea (Northflank) estos valores vienen de variables de entorno con
-        // los datos de TiDB. Si no existen, se usa el MySQL local de siempre.
-        String host = env("DB_HOST", "127.0.0.1");
-        String port = env("DB_PORT", "3306");
-        String bdName = env("DB_NAME", "healthBlood");
-        String user = env("DB_USER", "root");
-        String password = env("DB_PASSWORD", "root");
+        String host = config("DB_HOST", "127.0.0.1");
+        String port = config("DB_PORT", "3306");
+        String bdName = config("DB_NAME", "healthBlood");
+        String user = config("DB_USER", "root");
+        String password = config("DB_PASSWORD", "root");
         String url = "jdbc:mysql://" + host + ":" + port + "/" + bdName;
 
         // TiDB Cloud solo acepta conexiones cifradas (TLS); el MySQL local no tiene TLS configurado
@@ -45,7 +64,7 @@ public class ConnectionMysql {
             throw new RuntimeException(e);
         }
     }
-    
+
     public void close(){
         if(conn != null){
             try{
@@ -55,5 +74,5 @@ public class ConnectionMysql {
             }
         }
     }
-    
+
 }
