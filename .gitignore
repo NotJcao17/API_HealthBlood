@@ -1,0 +1,7 @@
+# Archivos generados por NetBeans al compilar
+build/
+dist/
+nbproject/private/
+
+# Variables de entorno locales (nunca subir contrasenas)
+.env
